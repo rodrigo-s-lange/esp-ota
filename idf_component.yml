@@ -1,0 +1,60 @@
+## =============================================================================
+## IDF Component: rodrigo-s-lange/esp_ota
+## Registry:      https://components.espressif.com/components/rodrigo-s-lange/esp_ota
+## Repository:    https://github.com/rodrigo-s-lange/esp-ota
+## =============================================================================
+##
+## ⚠  DEPENDÊNCIA INTERNA — requer rodrigo-s-lange/esp_at
+##
+##   Registry:    rodrigo-s-lange/esp_at >= 0.1.0
+##   Repositório: https://github.com/rodrigo-s-lange/esp-at
+##
+##   esp_at_init() DEVE ser chamado antes de esp_ota_init().
+##
+## ⚠  PRÉ-REQUISITO DE REDE
+##
+##   A interface WiFi deve estar conectada antes de AT+OTA="url".
+##   Recomendado: rodrigo-s-lange/esp_network
+##   Repositório: https://github.com/rodrigo-s-lange/esp-network
+##
+## Compatível com: esp32 | esp32-c3 | esp32-c6 | esp32-s3
+##
+## Para usar em outro projeto:
+##   Via registry:  idf.py add-dependency "rodrigo-s-lange/esp_ota>=0.1.0"
+##                  idf.py add-dependency "rodrigo-s-lange/esp_at>=0.1.0"
+##   Via submodule: git submodule add https://github.com/rodrigo-s-lange/esp-at.git      components/esp_at
+##                  git submodule add https://github.com/rodrigo-s-lange/esp-ota.git      components/esp_ota
+##
+## No código:
+##   #include "esp_at.h"
+##   #include "esp_ota.h"
+##   esp_at_init();
+##   esp_ota_init();
+## =============================================================================
+
+version: "0.1.0"
+
+description: >
+  OTA (Over-The-Air) update over HTTP/HTTPS triggered by AT commands.
+  Downloads and flashes firmware in a background task without blocking
+  the AT task or event loop. Reports progress via AT_I/AT_E.
+  Requires rodrigo-s-lange/esp_at.
+
+url: "https://github.com/rodrigo-s-lange/esp-ota"
+repository: "https://github.com/rodrigo-s-lange/esp-ota.git"
+
+license: "MIT"
+
+targets:
+  - esp32
+  - esp32c3
+  - esp32c6
+  - esp32s3
+
+dependencies:
+  idf:
+    version: ">=5.0.0"
+  ## Quando rodrigo-s-lange/esp_at estiver publicado no registry, descomentar:
+  # rodrigo-s-lange/esp_at:
+  #   version: ">=0.1.0"
+  ## Durante desenvolvimento local (submodule em components/esp_at), não é necessário.
