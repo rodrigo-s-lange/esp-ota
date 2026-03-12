@@ -10,7 +10,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-static const char *TAG = "esp_ota";
+//static const char *TAG = "esp_ota";
 
 static bool           s_initialized = false;
 static volatile bool  s_ota_running = false;
