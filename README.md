@@ -1,27 +1,31 @@
 # esp_ota
 
-OTA (Over-The-Air) firmware update over HTTP/HTTPS for the ESP32 family, triggered by AT commands.
-
-## Dependencies
-
-> **Requires [rodrigo-s-lange/esp_at](https://github.com/rodrigo-s-lange/esp-at)**
-> `esp_at_init()` must be called before `esp_ota_init()`.
-
-> **Network pre-requisite:** WiFi must be connected before issuing `AT+OTA="url"`.
-> Recommended: [rodrigo-s-lange/esp_network](https://github.com/rodrigo-s-lange/esp-network)
+OTA firmware update over HTTP/HTTPS for the ESP32 family.
 
 ## Features
 
-- OTA triggered by a single AT command
-- HTTP and HTTPS support (via `esp_https_ota`)
-- Non-blocking: runs in a dedicated background task
-- Progress and error feedback via `AT_I` / `AT_E`
+- OTA triggered through public API or optional AT command
+- HTTP and HTTPS support via `esp_https_ota`
+- Non-blocking background task
 - Guard against concurrent OTA attempts
 - Auto-restart on success
+- Optional internal logs
 
-## Targets
+## Init policy
 
-`esp32` · `esp32-c3` · `esp32-c6` · `esp32-s3`
+`esp_ota_init(log_enabled, at_enabled)` controls optional behavior.
+
+- `log_enabled`
+  - enables OTA logs
+- `at_enabled`
+  - registers `AT+OTA` and `AT+OTA?`
+
+## Network prerequisite
+
+WiFi must already be connected before starting OTA.
+
+Recommended companion:
+- `rodrigo-s-lange/esp_network`
 
 ## Usage
 
@@ -30,44 +34,33 @@ OTA (Over-The-Air) firmware update over HTTP/HTTPS for the ESP32 family, trigger
 #include "esp_ota.h"
 
 nvs_flash_init();
-esp_at_init();
-esp_network_init();   // or any WiFi init
-esp_network_start();
-esp_ota_init();
+ESP_ERROR_CHECK(esp_at_init(false));
+ESP_ERROR_CHECK(esp_network_init());
+ESP_ERROR_CHECK(esp_network_start());
+ESP_ERROR_CHECK(esp_ota_init(false, true));
 ```
 
-## AT Commands
+## Public API
 
-| Command | Effect |
-|---|---|
-| `AT+OTA?` | Show firmware version, IDF version, active partition |
-| `AT+OTA` | Same as `AT+OTA?` |
-| `AT+OTA="http://192.168.1.10/firmware.bin"` | Start OTA from URL; reboots on success |
+- `esp_ota_init(log_enabled, at_enabled)`
+- `esp_ota_deinit()`
+- `esp_ota_is_initialized()`
+- `esp_ota_is_running()`
+- `esp_ota_start(url)`
 
-## Partition table
+## AT commands
 
-OTA requires a partition table with at least two OTA partitions.
-Add to your project's `partitions.csv` or use the IDF default OTA table:
+When `at_enabled=true`:
+- `AT+OTA?`
+- `AT+OTA`
+- `AT+OTA="http://host/firmware.bin"`
 
-```
-# sdkconfig
-CONFIG_PARTITION_TABLE_TWO_OTA=y
-```
+## Notes
 
-## Install
+- Only one OTA session may run at a time.
+- `esp_ota_deinit()` refuses to run while OTA is active.
+- OTA task stack is `8192` bytes with priority `5`.
 
-```bash
-idf.py add-dependency "rodrigo-s-lange/esp_ota>=0.1.0"
-idf.py add-dependency "rodrigo-s-lange/esp_at>=0.1.0"
-```
+## Repository
 
-Or as git submodules:
-
-```bash
-git submodule add https://github.com/rodrigo-s-lange/esp-at.git  components/esp_at
-git submodule add https://github.com/rodrigo-s-lange/esp-ota.git components/esp_ota
-```
-
-## License
-
-MIT — © 2026 Rodrigo S. Lange
+https://github.com/rodrigo-s-lange/esp-ota
