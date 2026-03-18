@@ -97,6 +97,8 @@ static esp_err_t register_at_commands(void)
 
     err = esp_at_register_cmd_example("AT+OTA", handle_ota, "AT+OTA=\"http://192.168.1.10/firmware.bin\"");
     if (err != ESP_OK) return err;
+    err = esp_at_set_help_visible("AT+OTA", false);
+    if (err != ESP_OK) return err;
 
     s_at_registered = true;
     return ESP_OK;
