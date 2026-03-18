@@ -102,6 +102,15 @@ static esp_err_t register_at_commands(void)
     return ESP_OK;
 }
 
+static void unregister_at_commands(void)
+{
+    if (!s_at_registered) return;
+
+    (void)esp_at_unregister_cmd("AT+OTA?");
+    (void)esp_at_unregister_cmd("AT+OTA");
+    s_at_registered = false;
+}
+
 esp_err_t esp_ota_init(bool log_enabled, bool at_enabled)
 {
     if (s_initialized) {
@@ -135,6 +144,7 @@ esp_err_t esp_ota_deinit(void)
     }
 
     OTA_LOGI("deinitialized");
+    unregister_at_commands();
     s_initialized = false;
     s_log_enabled = false;
     s_at_enabled = false;
